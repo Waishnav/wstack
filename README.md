@@ -13,23 +13,30 @@ one place; per-agent paths are symlinks to them:
   symlink to it. `agents/AGENTS.md` (stows to `~/AGENTS.md`) is separate
   content (OS/dotfiles policy), not the same file.
 - Skills: `agents/.agents/skills/<name>` holds the one real copy of every
-  skill. Each harness symlinks **only the skills it actually uses** —
-  same coverage as before the migration, no cross-exposure:
-  - codex (14): agents-sdk, babysit-pr, cleanup-work, cloudflare,
+  **shared** skill. Each harness symlinks only the shared skills it uses.
+  **Harness-specific** skills live as real content under their own harness
+  dir, exactly where they were before the migration:
+  - codex-owned: `cleanup-work`, `frontend-skill`,
+    `invariant-driven-engineering` (real dirs under `agents/.codex/skills/`)
+  - claude-owned: `plannotator-*` x6 (real dirs under
+    `agents/.claude/skills/`)
+  - pi-owned: `chrome-devtools-pi` (real dir under
+    `agents/.pi/agent/skills/`), plus its own `web-perf` wording override
+  - codex (14 linked): agents-sdk, babysit-pr, cloudflare,
+    cloudflare-email-service, create-mcp-app, durable-objects, raise-pr,
+    sandbox-sdk, web-perf, workers-best-practices, wrangler
+    (+ 3 owned above)
+  - claude (11 linked): agents-sdk, chatgpt-apps, cloudflare,
     cloudflare-email-service, create-mcp-app, durable-objects,
-    frontend-skill, invariant-driven-engineering, raise-pr, sandbox-sdk,
-    web-perf, workers-best-practices, wrangler
-  - claude (17 + omarchy): agents-sdk, chatgpt-apps, cloudflare,
-    cloudflare-email-service, create-mcp-app, durable-objects,
-    plannotator-* (x6), react-doctor, sandbox-sdk, web-perf,
-    workers-best-practices, wrangler
-  - opencode (9): agents-sdk, cloudflare, cloudflare-email-service,
+    react-doctor, sandbox-sdk, web-perf, workers-best-practices, wrangler
+    (+ 6 owned above + external omarchy)
+  - opencode (9 linked): agents-sdk, cloudflare, cloudflare-email-service,
     create-mcp-app, durable-objects, sandbox-sdk, web-perf,
     workers-best-practices, wrangler
-  - pi (10 + own web-perf): agents-sdk, chatgpt-apps,
-    chrome-devtools-pi, cloudflare, cloudflare-email-service,
-    durable-objects, react-doctor, sandbox-sdk, workers-best-practices,
-    wrangler
+  - pi (10 linked): agents-sdk, chatgpt-apps, cloudflare,
+    cloudflare-email-service, durable-objects, react-doctor, sandbox-sdk,
+    workers-best-practices, wrangler (+ chrome-devtools-pi owned,
+    web-perf override)
   To expose a skill to another harness, add one symlink + commit.
 
 ## Install
