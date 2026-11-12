@@ -1,81 +1,69 @@
 ---
 name: raise-pr
-description: Use when the user asks to file/open/create/raise a PR
+description: Use when the user asks to file, open, create, raise or update a PR, including each layer of a stacked PR.
 ---
 
-# Open PR
+# Raise PR
 
-Before filing, check whether a PR for the branch already exists. Read repository instructions and any PR template, inspect the final diff against the intended base, and confirm the branch contains one coherent concern. Never open or update a PR unless the user explicitly requested that remote action.
+Never open or update a PR unless the user explicitly asked for that remote action. Check whether the branch already has a PR and update it instead of opening a duplicate. For dependent PRs, follow the `stacked-prs` skill for the stack mechanics and this skill for each layer's title and body.
 
-## Prepare the PR
+## Prepare
 
-1. Identify the intended base branch and review the full diff against it.
-2. Inspect recent merged PRs and git history for repository-specific title conventions.
-3. Check for unrelated changes, generated files, debug output, secrets, migration requirements, configuration changes, and user-facing documentation drift.
-4. Run the smallest relevant verification required by the repository before filing. Keep verification results in the agent's handoff, not in the PR body.
-5. Push only when the user has explicitly requested filing the PR and pushing is a necessary part of that workflow.
-6. Update an existing PR for the branch instead of opening a duplicate.
+1. Read the repository instructions and any PR template. Identify the intended base and review the full diff against it.
+2. Confirm that the branch holds one coherent concern. Check for unrelated changes, generated files, debug output, secrets, migrations, configuration changes and documentation drift.
+3. Run the verification the repository requires, plus whatever exercises the change for real: the app, a harness or a live run. A PR body can only claim what was actually run.
+4. Look at recent PRs in the repository for title conventions.
+5. Push only as part of a filing the user requested.
 
-## Write the title
+## Title
 
-Follow the repository's established convention. Prefer a concise, human-readable title that explains the outcome or why the change matters. Use a Conventional Commit-style title only when that matches the repository.
+Follow the repository's convention. Say what the change achieves, not how it was built. Use Conventional Commit form only when the repository does.
 
-Prefer:
+> Prefer: `fix(dates): date mentions store dates and read relative, like Notion`
+>
+> Avoid: `refactor(dates): add DateMention node and relative formatter`
 
-> fix(workflow): stop nested calls from exceeding the run limit
+## Body
 
-Avoid:
+Write for a reviewer who knows the codebase but not this conversation. Explain behaviour and decisions; the diff already shows the code.
 
-> refactor(workflow): add shared atomic counter and semaphore guard
+**Opening.** One or two sentences: what this does and why it matters, derived from the user's request or the product problem. For a stacked layer, say where it sits: "Part 1 of 2; the UI is the next PR. Stacked on #240."
 
-## Write the body
+**Sections.** Use only the ones that carry information, with sentence-case `##` headings. A small fix may need only the opening and a short Verification section.
 
-Write for a human reviewer, not as an agent handoff.
+| Section | Contents |
+| --- | --- |
+| `What changed` | Behaviour-level bullets grouped by area, each with a **bold lead-in**. Name the files, flags, settings or commands a reviewer must know about, never a file inventory. |
+| `Why` | The problem and observable impact, when the opening can't carry it. Include the rejected alternative when a reviewer would ask about it. |
+| Domain sections | Free-form headings such as `Semantics`, `Contracts and migration` or `Agents and import`, when an area has its own rules. Use a table for matrices of types, conditions or platforms. |
+| `Review` | Findings from an independent review (name the reviewer and model) and what was fixed in this PR as a result. |
+| `Verification` | What was actually exercised, against what, with concrete results: the scenario run and what happened, or "engine 85/85: every type and condition, both week starts". End with the checks that passed (type-check, lint, tests, build) in one line. |
+| `Unverified` or `Known gaps` | What was not run or is intentionally missing: other platforms, other harnesses, long-running behaviour, follow-up work. Always include it when such gaps exist. |
 
-Open with the user or system problem and its observable impact. Then briefly explain the chosen solution and any design decision a reviewer must understand. Derive the problem from the user's original request, issue, or product context rather than reverse-engineering a list of changed files.
+**Evidence.** For visible behaviour, attach screenshots or recordings with alt text that says what the image shows (see below).
 
-Keep the body proportional to the change. A small PR often needs only one or two short paragraphs and no headings.
-
-Include risks, migrations, rollout requirements, configuration changes, stacked-PR dependencies, important alternatives, or intentional limitations only when they materially affect review, deployment, or later work. Link the originating issue when one exists. Follow a required repository PR template, but keep its free-form prose concise and remove optional boilerplate that adds no review value.
+**Style.** Use plain, specific language and keep the domain terms. Put numbers where they exist (limits, timings, counts). Prefer short bullets to long paragraphs, but give each bullet a full sentence. Keep it proportional: a large layer can run to a few screens, while a one-line fix gets a few lines.
 
 Do not include:
 
-- `Summary`, `Validation`, `Verification`, `Test plan`, `Commits`, `Commit structure`, `Files changed`, or `Implementation details` sections
-- inventories of files, functions, classes, commits, tests, or implementation steps
-- commands that were run, checklists of passing tests, or CI results
-- claims that merely restate the diff
-- generic filler such as "improves maintainability," "adds comprehensive tests," or "ensures robustness" without a concrete, review-relevant meaning
-- agent attribution unless repository instructions explicitly require it
+- inventories of files, functions, commits or implementation steps
+- a `Summary` section that repeats the opening, or bullets that merely restate the diff
+- raw command transcripts, CI status, or "tests pass" with nothing about what they exercised
+- generic filler such as "improves maintainability" or "ensures robustness"
+- claims about runs that did not happen
 
-Add one of those sections only when the user explicitly asks for it or a repository template requires it. Even then, include only information that a reviewer cannot obtain directly from the diff or CI.
+Add attribution only through the footer the harness or repository already prescribes.
 
-Prefer:
+## Attach evidence
 
-> A runaway workflow could make an unbounded number of agent calls, consuming resources indefinitely. Workflow runs now stop after 256 calls, including calls made by nested workflows, and report a clear call-limit error.
+Use `gh pr create --attach <file>` for a new PR, `gh pr edit <pr> --attach <file>` to update one, or `gh pr comment <pr> --attach <file>` for evidence that belongs in a follow-up comment, such as a re-check after review fixes. Repeat `--attach` for several files and append `#alt text` to each path, for example `--attach './routine-select.png#Hands settings with the Routine context select'`.
 
-Avoid:
+If the body references a local path, such as `![Before](./before.png)`, attach the same file and `gh` rewrites the reference to the uploaded URL. Attached files the body doesn't reference are appended. Fall back to a browser upload only when `--attach` fails.
 
-> ## Summary
->
-> - enforce a hard budget of 256 agent calls
-> - share the budget through the runtime
-> - reject calls before semaphore acquisition
->
-> ## Validation
->
-> - npm test
-> - npm run build
+Keep evidence files out of the repository; write them to a gitignored path or the scratchpad. Attach only what a reviewer needs. Anything not attached is disposable.
 
-## Attach UI evidence
+## Submit
 
-For screenshots or interaction videos, prefer GitHub CLI attachments over browser-driven uploads. Use `gh pr create --attach <file>` when filing a new PR, `gh pr edit <pr> --attach <file>` when updating an existing one, or `gh pr comment <pr> --attach <file>` for evidence that belongs in a follow-up comment, such as a re-verification after review fixes. Repeat `--attach` for multiple files; for images, append `#alt text` to the path when useful.
+Write the body to a file and pass it with `--body-file`, so that quoting and backticks survive. Open a ready PR by default; use a draft only when the user asks or the work is intentionally incomplete.
 
-If the body references the local file path, such as `![Before](./before.png)`, pass that same file with `--attach` and let `gh` rewrite the reference to the uploaded GitHub asset URL. Prefer this over manually uploading through the GitHub web editor. Fall back to the browser only when the installed `gh` version does not support `--attach` or the upload fails for a host-specific reason.
-
-Never commit evidence files to the repository. Only attach the assets a reviewer needs; local evidence that is not attached is disposable.
-
-## Open or update the PR
-
-Use the prepared title and body without inventing additional sections at submission time. Open a ready PR by default when the implementation and verification are complete. Use a draft only when the user asks for one or the work is intentionally incomplete.
-
-After submission, report the PR URL and keep the local handoff separate: summarize what changed, verification performed, and anything unresolved there rather than copying that operational report into the PR description.
+Report the PR URL afterwards. Keep your handoff to the user separate from the PR body, and tell them about anything left unresolved.

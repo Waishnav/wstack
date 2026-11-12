@@ -1,4 +1,4 @@
 interface:
   display_name: "Raise PR"
-  short_description: "Open/Raise concise, human-readable pull requests"
-  default_prompt: "Use $raise-pr to review the branch and open a concise pull request."
+  short_description: "Open or update reviewer-ready pull requests"
+  default_prompt: "Use $raise-pr to review the branch and open a reviewer-ready pull request."

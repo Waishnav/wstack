@@ -49,6 +49,6 @@ After each push, refresh the head commit and wait for checks and review bots to 
 
 Keep an eye on the base branch and update the PR when needed without rewriting shared history. If another PR makes this one obsolete, stop, report it, and ask before closing it.
 
-Keep the title and description accurate when review changes materially alter the solution, risks, migrations, configuration, or rollout. Do not add verification inventories. Keep screenshots or recordings current when visible behavior changes.
+Keep the title and description accurate when review changes materially alter the solution, risks, migrations, configuration, or rollout. Keep the Verification and Unverified sections true to the latest commit, following the `raise-pr` skill. Keep screenshots or recordings current when visible behavior changes, attaching new ones with `gh pr edit --attach` or `gh pr comment --attach`.
 
 Stop when required checks are green on the latest commit, no requested changes or actionable review threads remain, the PR is mergeable, and its description and evidence match the final behavior. Merge only when the user explicitly requested it; otherwise report that the PR is ready and note anything intentionally deferred.
