@@ -1,6 +1,6 @@
 ---
 name: raise-pr
-description: Use when the user asks to file, open, or create a PR
+description: Use when the user asks to file/open/create/raise a PR
 ---
 
 # Open PR
@@ -65,6 +65,14 @@ Avoid:
 >
 > - npm test
 > - npm run build
+
+## Attach UI evidence
+
+For screenshots or interaction videos, prefer GitHub CLI attachments over browser-driven uploads. Use `gh pr create --attach <file>` when filing a new PR, `gh pr edit <pr> --attach <file>` when updating an existing one, or `gh pr comment <pr> --attach <file>` for evidence that belongs in a follow-up comment, such as a re-verification after review fixes. Repeat `--attach` for multiple files; for images, append `#alt text` to the path when useful.
+
+If the body references the local file path, such as `![Before](./before.png)`, pass that same file with `--attach` and let `gh` rewrite the reference to the uploaded GitHub asset URL. Prefer this over manually uploading through the GitHub web editor. Fall back to the browser only when the installed `gh` version does not support `--attach` or the upload fails for a host-specific reason.
+
+Never commit evidence files to the repository. Only attach the assets a reviewer needs; local evidence that is not attached is disposable.
 
 ## Open or update the PR
 
