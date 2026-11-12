@@ -49,6 +49,10 @@ I'm Waishnav. I love building complex things as simply as possible and prefer op
 - Keep QA evidence (screenshots, recordings, traces, fixtures) out of version control. Write it to a gitignored path such as the repository's `qa/` directory or your scratchpad, and never commit it.
 - Put evidence that matters on the PR: attach it to the description or a comment with `gh pr create|edit|comment --attach`. Treat everything else as disposable; it is deleted with the worktree or session.
 
+## Delegation
+
+Before delegating implementation, QA or review to another agent, use the `agent-matrix` skill to choose the provider, model and effort. Do research and planning yourself.
+
 ## Pull requests
 
 When explicitly asked to create or update a pull request, use the `raise-pr` skill. Use the `babysit-pr` skill to monitor reviews and CI or address review feedback.

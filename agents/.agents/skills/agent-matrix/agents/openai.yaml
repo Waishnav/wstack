@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Matrix"
+  short_description: "Pick the provider, model and effort for delegated work"
+  default_prompt: "Use $agent-matrix to choose who to delegate this implementation, QA or review task to."
